@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# shiplog
 
-## Getting Started
+Weekly log of progress across projects. Next.js (App Router) + Supabase (Postgres, Auth, RLS).
 
-First, run the development server:
+- Public: weekly feed (`/`), a page per ISO week (`/week/2026-W13`), project pages (`/projects/[slug]`), RSS (`/feed.xml`).
+- Private: `/dashboard` to create projects and write/publish weekly entries in Markdown.
+- Auth: Supabase magic link; only the signed-in owner can write (enforced by row level security).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Create a Supabase project, then copy the API URL and anon key:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   ```bash
+   cp .env.example .env.local
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. Run `supabase/migrations/0001_init.sql` in the Supabase SQL editor (or
+   `supabase db push` with the CLI).
 
-## Learn More
+3. In Supabase → Authentication → URL Configuration, set the site URL and add
+   `http://localhost:3000/auth/callback` (plus the production equivalent) as a
+   redirect URL.
 
-To learn more about Next.js, take a look at the following resources:
+4. Install and run:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   ```bash
+   npm install
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Sign in at `/login` with your email; the first sign-in creates the owner account.
 
-## Deploy on Vercel
+## Data model
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Table      | Purpose                                                                 |
+| ---------- | ----------------------------------------------------------------------- |
+| `projects` | One row per project (`slug`, `name`, `description`, `repo_url`).        |
+| `entries`  | One weekly note (`week_start` = Monday, Markdown `body`, `published`).  |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+RLS: everyone can read projects and published entries; only `owner_id` can
+insert, update, delete, or read drafts.
+
+## Deploy
+
+Deploy to Vercel and set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+and `NEXT_PUBLIC_SITE_URL` as environment variables.

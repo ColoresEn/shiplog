@@ -22,5 +22,43 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.prose-shiplog p {
+  margin-block: 0.6rem;
+}
+
+.prose-shiplog ul,
+.prose-shiplog ol {
+  margin-block: 0.6rem;
+  padding-inline-start: 1.25rem;
+  list-style: disc;
+}
+
+.prose-shiplog ol {
+  list-style: decimal;
+}
+
+.prose-shiplog h1,
+.prose-shiplog h2,
+.prose-shiplog h3 {
+  margin-block: 0.9rem 0.4rem;
+  font-weight: 600;
+}
+
+.prose-shiplog a {
+  text-decoration: underline;
+}
+
+.prose-shiplog code {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.85em;
+}
+
+.prose-shiplog pre {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  padding: 0.75rem 1rem;
 }
